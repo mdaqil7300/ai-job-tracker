@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AiService {
@@ -57,11 +58,13 @@ export class AiService {
         notes: string;
         status: 'Applied' | 'Interview' | 'Offer' | 'Rejected';
     }> {
-        const res = await fetch('http://localhost:5050/extract-job', {
+
+        const res = await fetch(`${environment.apiBaseUrl}/extract-job`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ emailText })
         });
+
 
         if (!res.ok) throw new Error('AI extraction failed');
         return await res.json();

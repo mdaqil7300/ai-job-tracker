@@ -1,0 +1,135 @@
+.page {
+  max-width: 950px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+  }
+
+  p {
+    margin: 6px 0 0;
+    opacity: 0.7;
+  }
+}
+
+.filters {
+  display: flex;
+  gap: 12px;
+  margin: 18px 0;
+
+  input,
+  select {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    width: 100%;
+  }
+
+  select {
+    max-width: 180px;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid #e3e7ee;
+  background: #fff;
+
+  h3 {
+    margin: 0;
+    font-size: 18px;
+  }
+
+  .role {
+    margin: 6px 0 10px;
+    opacity: 0.8;
+  }
+
+  .notes {
+    margin-top: 10px;
+    opacity: 0.8;
+    font-size: 14px;
+  }
+}
+
+.btn {
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+}
+
+.btn.primary {
+  background: black;
+  color: white;
+  border: none;
+}
+
+.btn.danger {
+  background: #ffefef;
+  border: 1px solid #ffbcbc;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  width: fit-content;
+}
+
+.badge.applied {
+  background: #eef5ff;
+}
+.badge.interview {
+  background: #fff4e5;
+}
+.badge.offer {
+  background: #eafff0;
+}
+.badge.rejected {
+  background: #ffecec;
+}
+
+.empty {
+  padding: 20px;
+  border: 1px dashed #ddd;
+  border-radius: 14px;
+  text-align: center;
+  opacity: 0.7;
+}
+
+.top-actions {
+  display: flex;
+  gap: 10px;
+}

@@ -1,0 +1,49 @@
+<div class="page">
+    <header class="header">
+        <div>
+            <h1>{{ pageTitle() }}</h1>
+            <p>Keep it simple. Track only what matters.</p>
+        </div>
+
+        <a class="btn" routerLink="/jobs">← Back</a>
+    </header>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="field">
+            <label>Company Name *</label>
+            <input type="text" formControlName="companyName" placeholder="e.g. Infosys" />
+
+            <small class="error" *ngIf="companyName.touched && companyName.invalid">
+                Company name is required (min 2 chars)
+            </small>
+        </div>
+
+        <div class="field">
+            <label>Role *</label>
+            <input type="text" formControlName="role" placeholder="e.g. Angular Developer" />
+
+            <small class="error" *ngIf="role.touched && role.invalid">
+                Role is required (min 2 chars)
+            </small>
+        </div>
+
+        <div class="field">
+            <label>Status *</label>
+            <select formControlName="status">
+                <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Notes</label>
+            <textarea formControlName="notes" placeholder="e.g. HR called, waiting for round 2..."></textarea>
+        </div>
+
+        <div class="actions">
+            <button type="button" class="btn" (click)="onCancel()">Cancel</button>
+            <button type="submit" class="btn primary">
+                {{ isEditMode() ? 'Update Job' : 'Save Job' }}
+            </button>
+        </div>
+    </form>
+</div>

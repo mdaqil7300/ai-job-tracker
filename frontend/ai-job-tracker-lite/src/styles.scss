@@ -1,0 +1,14 @@
+/* You can add global styles to this file, and also import other style files */
+/* Global subtle background */
+body {
+  margin: 0;
+  background: #f4f6f9; /* soft light grey-blue */
+  color: #111;
+}
+
+/* make cards slightly better */
+.card,
+.form,
+.output {
+  background: #ffffff;
+}

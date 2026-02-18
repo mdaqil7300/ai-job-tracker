@@ -1,0 +1,30 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand fw-semibold" routerLink="/jobs">
+            AI Job Tracker
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="nav">
+            <ul class="navbar-nav ms-auto gap-2">
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/jobs" routerLinkActive="active">
+                        Jobs
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/ai" routerLinkActive="active">
+                        AI Helper
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<app-toast></app-toast>
+<router-outlet></router-outlet>

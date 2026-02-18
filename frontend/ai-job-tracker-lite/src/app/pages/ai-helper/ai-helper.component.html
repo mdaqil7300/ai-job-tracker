@@ -1,116 +1,141 @@
-<div class="page">
-    <header class="header">
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
         <div>
-            <h1>AI Helper</h1>
-            <p>Generate interview content in seconds 🚀</p>
+            <h4 class="mb-1">AI Helper</h4>
+            <p class="text-muted mb-0">Extract jobs + generate content using AI</p>
         </div>
 
-        <a class="btn" routerLink="/jobs">← Back</a>
-    </header>
+        <a class="btn btn-outline-dark" routerLink="/jobs">← Back</a>
+    </div>
 
-    <!-- Extract Job from Email -->
-    <section class="card">
-        <h2>0) Paste Email → Extract Job</h2>
+    <!-- 0) Paste Email → Extract Job -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="mb-3">0) Paste Email → Extract Job</h5>
 
-        <form [formGroup]="extractForm" (ngSubmit)="onExtractJob()">
-            <div class="field">
-                <label>Paste application email text *</label>
-                <textarea class="big-text" formControlName="emailText"
-                    placeholder="Paste your job application confirmation email here..."></textarea>
+            <form [formGroup]="extractForm" (ngSubmit)="onExtractJob()">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Paste application email text *</label>
 
-                <small class="hint">
-                    Example: “Thanks for applying to Accenture for Angular Developer role…”
-                </small>
-            </div>
+                    <textarea class="form-control" rows="6" formControlName="emailText"
+                        placeholder="Paste your job email here..."></textarea>
 
-            <div class="actions">
-                <button class="btn primary" type="submit" [disabled]="loadingExtract()">
+                    <div class="form-text">
+                        Example: “Thank you for applying to Cisco for Senior Software Engineer - UI Angular…”
+                    </div>
+                </div>
+
+                <button class="btn btn-dark" type="submit" [disabled]="loadingExtract()">
+                    <span *ngIf="loadingExtract()" class="spinner-border spinner-border-sm me-2"></span>
                     {{ loadingExtract() ? 'Extracting...' : 'Extract Job' }}
                 </button>
-            </div>
-        </form>
+            </form>
 
-        <div *ngIf="extractedJob()" class="output">
-            <div class="output-header">
-                <h3>Extracted Job</h3>
-                <button class="btn" (click)="saveExtractedJob()">Save as Job</button>
-            </div>
+            <!-- Extracted preview -->
+            <div *ngIf="extractedJob()" class="alert alert-light border mt-4">
+                <div class="d-flex justify-content-between align-items-start gap-3">
+                    <div>
+                        <div class="mb-1"><b>Company:</b> {{ extractedJob()!.companyName }}</div>
+                        <div class="mb-1"><b>Role:</b> {{ extractedJob()!.role }}</div>
+                        <div class="mb-2">
+                            <b>Status:</b>
+                            <span class="badge" [ngClass]="{
+                  'text-bg-primary': extractedJob()!.status === 'Applied',
+                  'text-bg-warning': extractedJob()!.status === 'Interview',
+                  'text-bg-success': extractedJob()!.status === 'Offer',
+                  'text-bg-danger': extractedJob()!.status === 'Rejected'
+                }">
+                                {{ extractedJob()!.status }}
+                            </span>
+                        </div>
+                    </div>
 
-            <div class="preview">
-                <p><b>Company:</b> {{ extractedJob()!.companyName }}</p>
-                <p><b>Role:</b> {{ extractedJob()!.role }}</p>
-                <p><b>Status:</b> {{ extractedJob()!.status }}</p>
+                    <button class="btn btn-success" (click)="saveExtractedJob()">
+                        Save Job
+                    </button>
+                </div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Follow-up Email -->
-    <section class="card">
-        <h2>1) Follow-up Email Generator</h2>
+    <!-- 1) Follow-up Email Generator -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="mb-3">1) Follow-up Email Generator</h5>
 
-        <form class="grid" [formGroup]="emailForm" (ngSubmit)="onGenerateEmail()">
-            <div class="field">
-                <label>Company *</label>
-                <input formControlName="companyName" placeholder="e.g. Accenture" />
+            <form class="row g-3" [formGroup]="emailForm" (ngSubmit)="onGenerateEmail()">
+                <div class="col-12 col-md-4">
+                    <label class="form-label fw-semibold">Company *</label>
+                    <input class="form-control" formControlName="companyName" placeholder="e.g. CAI" />
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label class="form-label fw-semibold">Role *</label>
+                    <input class="form-control" formControlName="role" placeholder="e.g. Full Stack Developer" />
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label class="form-label fw-semibold">Last Interview Date *</label>
+                    <input class="form-control" type="date" formControlName="lastInterviewDate" />
+                </div>
+
+                <div class="col-12">
+                    <button class="btn btn-dark" type="submit" [disabled]="loadingEmail()">
+                        <span *ngIf="loadingEmail()" class="spinner-border spinner-border-sm me-2"></span>
+                        {{ loadingEmail() ? 'Generating...' : 'Generate Email' }}
+                    </button>
+                </div>
+            </form>
+
+            <div *ngIf="generatedEmail()" class="mt-4">
+                <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+                    <h6 class="mb-0">Generated Email</h6>
+                    <button class="btn btn-outline-secondary btn-sm" (click)="copyEmail()">Copy</button>
+                </div>
+
+                <pre class="p-3 border rounded bg-light mb-0">{{ generatedEmail() }}</pre>
             </div>
-
-            <div class="field">
-                <label>Role *</label>
-                <input formControlName="role" placeholder="e.g. Angular Developer" />
-            </div>
-
-            <div class="field">
-                <label>Last Interview Date *</label>
-                <input type="date" formControlName="lastInterviewDate" />
-            </div>
-
-            <div class="actions">
-                <button class="btn primary" type="submit" [disabled]="loadingEmail()">
-                    {{ loadingEmail() ? 'Generating...' : 'Generate Email' }}
-                </button>
-            </div>
-        </form>
-
-        <div *ngIf="generatedEmail()" class="output">
-            <div class="output-header">
-                <h3>Generated Email</h3>
-                <button class="btn" (click)="copyEmail()">Copy</button>
-            </div>
-            <pre>{{ generatedEmail() }}</pre>
         </div>
-    </section>
+    </div>
 
-    <!-- Interview Questions -->
-    <section class="card">
-        <h2>2) Interview Questions Generator</h2>
+    <!-- 2) Interview Questions Generator -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="mb-3">2) Interview Questions Generator</h5>
 
-        <form class="grid" [formGroup]="questionsForm" (ngSubmit)="onGenerateQuestions()">
-            <div class="field">
-                <label>Role *</label>
-                <input formControlName="role" placeholder="e.g. Frontend Developer" />
+            <form class="row g-3" [formGroup]="questionsForm" (ngSubmit)="onGenerateQuestions()">
+                <div class="col-12 col-md-6">
+                    <label class="form-label fw-semibold">Role *</label>
+                    <input class="form-control" formControlName="role" placeholder="e.g. Frontend Developer" />
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="form-label fw-semibold">Tech Stack *</label>
+                    <input class="form-control" formControlName="techStack" placeholder="Angular, RxJS, TypeScript" />
+                </div>
+
+                <div class="col-12">
+                    <button class="btn btn-dark" type="submit" [disabled]="loadingQuestions()">
+                        <span *ngIf="loadingQuestions()" class="spinner-border spinner-border-sm me-2"></span>
+                        {{ loadingQuestions() ? 'Generating...' : 'Generate Questions' }}
+                    </button>
+                </div>
+            </form>
+
+            <div *ngIf="generatedQuestions().length > 0" class="mt-4">
+                <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+                    <h6 class="mb-0">Generated Questions</h6>
+                    <button class="btn btn-outline-secondary btn-sm" (click)="copyQuestions()">Copy</button>
+                </div>
+
+                <ul class="list-group">
+                    <li class="list-group-item" *ngFor="let q of generatedQuestions()">
+                        {{ q }}
+                    </li>
+                </ul>
             </div>
-
-            <div class="field">
-                <label>Tech Stack *</label>
-                <input formControlName="techStack" placeholder="Angular, RxJS, NgRx..." />
-            </div>
-
-            <div class="actions">
-                <button class="btn primary" type="submit" [disabled]="loadingQuestions()">
-                    {{ loadingQuestions() ? 'Generating...' : 'Generate Questions' }}
-                </button>
-            </div>
-        </form>
-
-        <div *ngIf="generatedQuestions().length > 0" class="output">
-            <div class="output-header">
-                <h3>Generated Questions</h3>
-                <button class="btn" (click)="copyQuestions()">Copy</button>
-            </div>
-
-            <ul>
-                <li *ngFor="let q of generatedQuestions()">{{ q }}</li>
-            </ul>
         </div>
-    </section>
+    </div>
 </div>

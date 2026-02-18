@@ -1,49 +1,70 @@
-<div class="page">
-    <header class="header">
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
         <div>
-            <h1>{{ pageTitle() }}</h1>
-            <p>Keep it simple. Track only what matters.</p>
+            <h4 class="mb-1">{{ pageTitle() }}</h4>
+            <p class="text-muted mb-0">Add or update your job application</p>
         </div>
 
-        <a class="btn" routerLink="/jobs">← Back</a>
-    </header>
+        <a class="btn btn-outline-dark" routerLink="/jobs">← Back</a>
+    </div>
 
-    <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
-        <div class="field">
-            <label>Company Name *</label>
-            <input type="text" formControlName="companyName" placeholder="e.g. Infosys" />
+    <!-- Form Card -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-            <small class="error" *ngIf="companyName.touched && companyName.invalid">
-                Company name is required (min 2 chars)
-            </small>
+                <!-- Company -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Company Name *</label>
+                    <input type="text" class="form-control" formControlName="companyName" placeholder="e.g. Cisco" />
+
+                    <div class="text-danger small mt-1" *ngIf="companyName.touched && companyName.invalid">
+                        Company name is required (min 2 chars)
+                    </div>
+                </div>
+
+                <!-- Role -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Role *</label>
+                    <input type="text" class="form-control" formControlName="role"
+                        placeholder="e.g. Senior Software Engineer - UI Angular" />
+
+                    <div class="text-danger small mt-1" *ngIf="role.touched && role.invalid">
+                        Role is required (min 2 chars)
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Status *</label>
+                    <select class="form-select" formControlName="status">
+                        <option *ngFor="let s of statuses" [value]="s">
+                            {{ s }}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Notes -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Notes</label>
+                    <textarea class="form-control" formControlName="notes" rows="4"
+                        placeholder="e.g. HR called, waiting for round 2..."></textarea>
+                </div>
+
+                <!-- Actions -->
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-outline-secondary" (click)="onCancel()">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="btn btn-dark">
+                        {{ isEditMode() ? 'Update Job' : 'Save Job' }}
+                    </button>
+                </div>
+
+            </form>
         </div>
-
-        <div class="field">
-            <label>Role *</label>
-            <input type="text" formControlName="role" placeholder="e.g. Angular Developer" />
-
-            <small class="error" *ngIf="role.touched && role.invalid">
-                Role is required (min 2 chars)
-            </small>
-        </div>
-
-        <div class="field">
-            <label>Status *</label>
-            <select formControlName="status">
-                <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
-            </select>
-        </div>
-
-        <div class="field">
-            <label>Notes</label>
-            <textarea formControlName="notes" placeholder="e.g. HR called, waiting for round 2..."></textarea>
-        </div>
-
-        <div class="actions">
-            <button type="button" class="btn" (click)="onCancel()">Cancel</button>
-            <button type="submit" class="btn primary">
-                {{ isEditMode() ? 'Update Job' : 'Save Job' }}
-            </button>
-        </div>
-    </form>
+    </div>
 </div>

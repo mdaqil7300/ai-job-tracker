@@ -1,14 +1,22 @@
-/* You can add global styles to this file, and also import other style files */
-/* Global subtle background */
 body {
-  margin: 0;
-  background: #f4f6f9; /* soft light grey-blue */
-  color: #111;
+  background: #dbe2e6;
+  min-height: 100vh;
 }
 
-/* make cards slightly better */
-.card,
-.form,
-.output {
-  background: #ffffff;
+.card {
+  border: 0;
+  border-radius: 16px;
+}
+
+.card.shadow-sm {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06) !important;
+}
+
+.navbar {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+pre {
+  background: #dbe2e6 !important;
+  border-radius: 12px;
 }

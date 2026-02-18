@@ -1,52 +1,90 @@
-<div class="page">
-    <header class="header">
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
         <div>
-            <h1>AI Job Tracker Lite</h1>
-            <p>Track applications + prep interviews with AI</p>
+            <h4 class="mb-1">AI Job Tracker Lite</h4>
+            <p class="text-muted mb-0">Track applications + prep interviews with AI</p>
         </div>
 
-        <div class="top-actions">
-            <a class="btn" routerLink="/ai">AI Helper</a>
-            <a class="btn primary" routerLink="/jobs/add">+ Add Job</a>
+        <div class="d-flex gap-2">
+            <!-- <a class="btn btn-outline-dark" routerLink="/ai">AI Helper</a> -->
+            <a class="btn btn-dark" routerLink="/jobs/add">+ Add Job</a>
         </div>
-    </header>
+    </div>
 
-    <section class="filters">
-        <input type="text" placeholder="Search by company or role..."
-            (input)="searchText.set(($any($event.target).value))" />
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-12 col-md-8">
+                    <label class="form-label fw-semibold">Search</label>
+                    <input type="text" class="form-control" placeholder="Search by company or role..."
+                        (input)="searchText.set(($any($event.target).value))" />
+                </div>
 
-        <select (change)="selectedStatus.set(($any($event.target).value))">
-            <option value="All">All</option>
-            <option value="Applied">Applied</option>
-            <option value="Interview">Interview</option>
-            <option value="Offer">Offer</option>
-            <option value="Rejected">Rejected</option>
-        </select>
-    </section>
-
-    <section class="list">
-        <div *ngIf="filteredJobs().length === 0" class="empty">
-            No jobs found. Add your first application 🚀
-        </div>
-
-        <div *ngFor="let job of filteredJobs()" class="card">
-            <div class="left">
-                <h3>{{ job.companyName }}</h3>
-                <p class="role">{{ job.role }}</p>
-
-                <span [class]="getBadgeClass(job.status)">
-                    {{ job.status }}
-                </span>
-
-                <p class="notes" *ngIf="job.notes">
-                    {{ job.notes }}
-                </p>
-            </div>
-
-            <div class="right">
-                <a class="btn" [routerLink]="['/jobs/edit', job._id]">Edit</a>
-                <button class="btn danger" (click)="onDelete(job._id)">Delete</button>
+                <div class="col-12 col-md-4">
+                    <label class="form-label fw-semibold">Status</label>
+                    <select class="form-select" (change)="selectedStatus.set(($any($event.target).value))">
+                        <option value="All">All</option>
+                        <option value="Applied">Applied</option>
+                        <option value="Interview">Interview</option>
+                        <option value="Offer">Offer</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                </div>
             </div>
         </div>
-    </section>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading()" class="text-center py-5">
+        <div class="spinner-border" role="status"></div>
+        <div class="text-muted mt-2">Loading jobs...</div>
+    </div>
+
+    <!-- Empty -->
+    <div *ngIf="!loading() && filteredJobs().length === 0" class="alert alert-light border">
+        No jobs found. Add your first application 🚀
+    </div>
+
+    <!-- Jobs List -->
+    <div class="row g-3" *ngIf="!loading() && filteredJobs().length > 0">
+        <div class="col-12" *ngFor="let job of filteredJobs()">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex flex-column flex-md-row justify-content-between gap-3">
+
+                    <!-- Left -->
+                    <div>
+                        <h5 class="mb-1">{{ job.companyName }}</h5>
+                        <div class="text-muted mb-2">{{ job.role }}</div>
+
+                        <span class="badge" [ngClass]="{
+                            'text-bg-primary': job.status === 'Applied',
+                            'text-bg-warning': job.status === 'Interview',
+                            'text-bg-success': job.status === 'Offer',
+                            'text-bg-danger': job.status === 'Rejected'
+                        }">
+                            {{ job.status }}
+                        </span>
+
+                        <div *ngIf="job.notes" class="mt-3 small text-muted">
+                            {{ job.notes }}
+                        </div>
+                    </div>
+
+                    <!-- Right -->
+                    <div class="d-flex gap-2 align-items-start">
+                        <a class="btn btn-outline-secondary" [routerLink]="['/jobs/edit', job._id]">
+                            Edit
+                        </a>
+                        <button class="btn btn-outline-danger" (click)="onDelete(job._id)">
+                            Delete
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

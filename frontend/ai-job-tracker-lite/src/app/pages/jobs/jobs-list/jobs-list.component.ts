@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Job, JobStatus } from '../../../core/models/job.model';
 import { RouterModule } from '@angular/router';
 import { JobsApiService } from '../../../core/services/jobs-api.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-jobs-list',
@@ -15,14 +16,23 @@ export class JobsListComponent {
   jobs = signal<Job[]>([]);
   searchText = signal('');
   selectedStatus = signal<JobStatus | 'All'>('All');
+  loading = signal(true);
 
-  constructor(private jobsApi: JobsApiService) {
+  constructor(private jobsApi: JobsApiService, private toast: ToastService) {
     this.loadJobs();
   }
 
   async loadJobs() {
-    const data = await this.jobsApi.getJobs();
-    this.jobs.set(data);
+    this.loading.set(true);
+
+    try {
+      const data = await this.jobsApi.getJobs();
+      this.jobs.set(data);
+    } catch {
+      this.toast.show('Failed to load jobs', 'danger');
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   filteredJobs = computed(() => {
@@ -45,6 +55,7 @@ export class JobsListComponent {
     if (!ok) return;
 
     await this.jobsApi.deleteJob(id);
+    this.toast.show('Job deleted!', 'success');
     await this.loadJobs();
   }
 

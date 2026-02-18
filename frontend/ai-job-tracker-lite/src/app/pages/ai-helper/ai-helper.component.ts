@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AiService } from '../../core/services/ai.service';
-import { JobStorageService } from '../../core/services/job-storage.service';
-import { Job } from '../../core/models/job.model';
+import { ToastService } from '../../core/services/toast.service';
 import { JobsApiService } from '../../core/services/jobs-api.service';
 
 @Component({
@@ -44,7 +43,8 @@ export class AiHelperComponent {
   constructor(
     private fb: FormBuilder,
     private ai: AiService,
-    private jobsApi: JobsApiService
+    private jobsApi: JobsApiService,
+    private toast: ToastService
   ) { }
 
   extractForm = this.fb.group({
@@ -109,6 +109,8 @@ export class AiHelperComponent {
       const emailText = this.extractForm.getRawValue().emailText!;
       const extracted = await this.ai.extractJobFromEmail(emailText);
       this.extractedJob.set(extracted);
+    } catch (e: any) {
+      this.toast.show(e.message, 'danger');
     } finally {
       this.loadingExtract.set(false);
     }
@@ -131,7 +133,7 @@ export class AiHelperComponent {
         notes: `${existing.notes ?? ''}\n\n---\n\n${data.notes}`.trim()
       });
 
-      alert(`Job updated! Status: ${data.status} ✅`);
+      this.toast.show(`Job updated! Status: ${data.status} ✅`, 'success');
     } else {
       await this.jobsApi.createJob({
         companyName: data.companyName,
@@ -140,7 +142,7 @@ export class AiHelperComponent {
         notes: data.notes
       });
 
-      alert(`Job saved! Status: ${data.status} ✅`);
+      this.toast.show(`Job saved! Status: ${data.status}} ✅`, 'success');
     }
 
     this.extractedJob.set(null);
@@ -150,12 +152,12 @@ export class AiHelperComponent {
   copyEmail() {
     if (!this.generatedEmail()) return;
     navigator.clipboard.writeText(this.generatedEmail());
-    alert('Email copied!');
+    this.toast.show('Email copied!', 'success');
   }
 
   copyQuestions() {
     if (this.generatedQuestions().length === 0) return;
     navigator.clipboard.writeText(this.generatedQuestions().join('\n\n'));
-    alert('Questions copied!');
+    this.toast.show('Questions copied!', 'success');
   }
 }

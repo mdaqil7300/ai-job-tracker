@@ -21,6 +21,109 @@ app.get("/health", (req, res) => {
 
 app.use("/jobs", jobsRoutes);
 
+app.post("/generate-followup-email", async (req, res) => {
+    try {
+        const { companyName, role, lastInterviewDate } = req.body;
+
+        if (!companyName || !role || !lastInterviewDate) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+
+        const prompt = `Write a professional follow-up email.
+
+Inputs:
+- Company: ${companyName}
+- Role: ${role}
+- Last interview date: ${lastInterviewDate}
+
+Rules:
+- Keep it polite and concise
+- Include subject line
+- Return plain text only (no markdown).`;
+
+        const completion = await groq.chat.completions.create({
+            model: "llama-3.1-8b-instant",
+            temperature: 0.4,
+            messages: [
+                { role: "system", content: "You write professional emails." },
+                { role: "user", content: prompt },
+            ],
+        });
+
+        const email = completion.choices?.[0]?.message?.content ?? "";
+
+        return res.json({ email });
+    } catch (err) {
+        console.error(err);
+        // return res.status(500).json({ error: "Failed to generate email" });
+        const msg = String(err?.message || err);
+
+        // This is the adblock / privacy extension case
+        if (msg.includes('Failed to fetch')) {
+            throw new Error(
+                'Request blocked. If you are using AdBlock/uBlock/Brave Shields, disable it for this site and try again.'
+            );
+        }
+
+        throw new Error('AI service is not reachable. Please try again.');
+    }
+});
+
+app.post("/generate-interview-questions", async (req, res) => {
+    try {
+        const { role, techStack } = req.body;
+
+        if (!role || !techStack) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+
+        const prompt = `Generate 7 interview questions for the role: ${role}.
+
+Tech stack: ${techStack}
+
+Rules:
+- Questions must be practical and real interview style
+- Return ONLY JSON array of strings
+Example:
+["Q1", "Q2"]`;
+
+        const completion = await groq.chat.completions.create({
+            model: "llama-3.1-8b-instant",
+            temperature: 0.3,
+            messages: [
+                { role: "system", content: "You generate interview questions. Output JSON only." },
+                { role: "user", content: prompt },
+            ],
+        });
+
+        const raw = completion.choices?.[0]?.message?.content ?? "";
+
+        let questions;
+        try {
+            questions = JSON.parse(raw);
+        } catch {
+            const jsonMatch = raw.match(/\[[\s\S]*\]/);
+            questions = jsonMatch ? JSON.parse(jsonMatch[0]) : [];
+        }
+
+        return res.json({ questions });
+    } catch (err) {
+        console.error(err);
+        // return res.status(500).json({ error: "Failed to generate questions" });
+        const msg = String(err?.message || err);
+
+        // This is the adblock / privacy extension case
+        if (msg.includes('Failed to fetch')) {
+            throw new Error(
+                'Request blocked. If you are using AdBlock/uBlock/Brave Shields, disable it for this site and try again.'
+            );
+        }
+
+        throw new Error('AI service is not reachable. Please try again.');
+    }
+});
+
+
 app.post("/extract-job", async (req, res) => {
     try {
         const { emailText } = req.body;
@@ -99,7 +202,16 @@ ${emailText}
         return res.json(response);
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ error: "Server error" });
+        const msg = String(err?.message || err);
+
+        // This is the adblock / privacy extension case
+        if (msg.includes('Failed to fetch')) {
+            throw new Error(
+                'Request blocked. If you are using AdBlock/uBlock/Brave Shields, disable it for this site and try again.'
+            );
+        }
+
+        throw new Error('AI service is not reachable. Please try again.');
     }
 });
 

@@ -10,3 +10,30 @@ pre {
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+.segmented {
+  display: inline-flex;
+  gap: 6px;
+  padding: 6px;
+  background: #f1f3f5;
+  border-radius: 999px;
+}
+
+.seg-btn {
+  border: 0;
+  background: transparent;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  color: #333;
+  transition: 0.2s ease;
+}
+
+.seg-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.seg-btn.active {
+  background: #212529;
+  color: white;
+}

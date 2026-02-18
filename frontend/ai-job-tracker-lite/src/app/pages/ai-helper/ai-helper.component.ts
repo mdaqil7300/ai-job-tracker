@@ -40,6 +40,8 @@ export class AiHelperComponent {
     status: 'Applied' | 'Interview' | 'Offer' | 'Rejected';
   } | null>(null);
 
+  activeTab = signal<'extract' | 'email' | 'questions'>('extract');
+
   constructor(
     private fb: FormBuilder,
     private ai: AiService,

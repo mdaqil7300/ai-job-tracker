@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { AiService } from '../../core/services/ai.service';
 import { JobStorageService } from '../../core/services/job-storage.service';
 import { Job } from '../../core/models/job.model';
+import { JobsApiService } from '../../core/services/jobs-api.service';
 
 @Component({
   selector: 'app-ai-helper',
@@ -43,7 +44,7 @@ export class AiHelperComponent {
   constructor(
     private fb: FormBuilder,
     private ai: AiService,
-    private jobStorage: JobStorageService
+    private jobsApi: JobsApiService
   ) { }
 
   extractForm = this.fb.group({
@@ -113,48 +114,38 @@ export class AiHelperComponent {
     }
   }
 
-  saveExtractedJob() {
+  async saveExtractedJob() {
     const data = this.extractedJob();
     if (!data) return;
 
-    const jobs = this.jobStorage.getJobs();
+    const jobs = await this.jobsApi.getJobs();
 
-    // Find existing job by company + role (case-insensitive)
     const existing = jobs.find(j =>
       j.companyName.toLowerCase().trim() === data.companyName.toLowerCase().trim() &&
       j.role.toLowerCase().trim() === data.role.toLowerCase().trim()
     );
 
-    // If exists -> update status + notes
     if (existing) {
-      const updated: Job = {
-        ...existing,
+      await this.jobsApi.updateJob(existing._id, {
         status: data.status,
         notes: `${existing.notes ?? ''}\n\n---\n\n${data.notes}`.trim()
-      };
+      });
 
-      this.jobStorage.updateJob(updated);
       alert(`Job updated! Status: ${data.status} ✅`);
     } else {
-      // Else -> create new
-      const job: Job = {
-        id: crypto.randomUUID(),
+      await this.jobsApi.createJob({
         companyName: data.companyName,
-        role: data.role,
+        role: data.role === '' ? 'Unknown' : data.role,
         status: data.status,
-        notes: data.notes,
-        createdAt: new Date().toISOString()
-      };
+        notes: data.notes
+      });
 
-      this.jobStorage.addJob(job);
       alert(`Job saved! Status: ${data.status} ✅`);
     }
 
-    // reset
     this.extractedJob.set(null);
     this.extractForm.reset();
   }
-
 
   copyEmail() {
     if (!this.generatedEmail()) return;

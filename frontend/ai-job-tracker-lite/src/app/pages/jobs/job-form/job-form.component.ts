@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Job, JobStatus } from '../../../core/models/job.model';
-import { JobStorageService } from '../../../core/services/job-storage.service';
+import { JobsApiService } from '../../../core/services/jobs-api.service';
 
 @Component({
   selector: 'app-job-form',
@@ -31,14 +31,14 @@ export class JobFormComponent {
 
   constructor(
     private fb: FormBuilder,
-    private jobStorage: JobStorageService,
+    private jobsApi: JobsApiService,
     private route: ActivatedRoute,
     private router: Router
   ) {
     this.initMode();
   }
 
-  private initMode() {
+  private async initMode() {
     const id = this.route.snapshot.paramMap.get('id');
 
     if (!id) {
@@ -46,26 +46,25 @@ export class JobFormComponent {
       return;
     }
 
-    const job = this.jobStorage.getJobById(id);
+    try {
+      const job = await this.jobsApi.getJobById(id);
 
-    if (!job) {
+      this.isEditMode.set(true);
+      this.jobId.set(id);
+
+      this.form.patchValue({
+        companyName: job.companyName,
+        role: job.role,
+        status: job.status,
+        notes: job.notes ?? ''
+      });
+    } catch {
       alert('Job not found');
       this.router.navigateByUrl('/jobs');
-      return;
     }
-
-    this.isEditMode.set(true);
-    this.jobId.set(id);
-
-    this.form.patchValue({
-      companyName: job.companyName,
-      role: job.role,
-      status: job.status,
-      notes: job.notes ?? ''
-    });
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -75,38 +74,25 @@ export class JobFormComponent {
 
     // Add mode
     if (!this.isEditMode()) {
-      const newJob: Job = {
-        id: crypto.randomUUID(),
+      await this.jobsApi.createJob({
         companyName: value.companyName!,
         role: value.role!,
         status: value.status!,
-        notes: value.notes ?? '',
-        createdAt: new Date().toISOString()
-      };
+        notes: value.notes ?? ''
+      });
 
-      this.jobStorage.addJob(newJob);
       this.router.navigateByUrl('/jobs');
       return;
     }
 
     // Edit mode
-    const existingJob = this.jobStorage.getJobById(this.jobId()!);
-
-    if (!existingJob) {
-      alert('Job not found');
-      this.router.navigateByUrl('/jobs');
-      return;
-    }
-
-    const updatedJob: Job = {
-      ...existingJob,
+    await this.jobsApi.updateJob(this.jobId()!, {
       companyName: value.companyName!,
       role: value.role!,
       status: value.status!,
       notes: value.notes ?? ''
-    };
+    });
 
-    this.jobStorage.updateJob(updatedJob);
     this.router.navigateByUrl('/jobs');
   }
 
@@ -118,6 +104,7 @@ export class JobFormComponent {
   get companyName() {
     return this.form.controls.companyName;
   }
+
   get role() {
     return this.form.controls.role;
   }

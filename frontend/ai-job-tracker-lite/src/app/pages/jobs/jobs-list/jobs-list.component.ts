@@ -1,8 +1,8 @@
 import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Job, JobStatus } from '../../../core/models/job.model';
-import { JobStorageService } from '../../../core/services/job-storage.service';
 import { RouterModule } from '@angular/router';
+import { JobsApiService } from '../../../core/services/jobs-api.service';
 
 @Component({
   selector: 'app-jobs-list',
@@ -16,12 +16,13 @@ export class JobsListComponent {
   searchText = signal('');
   selectedStatus = signal<JobStatus | 'All'>('All');
 
-  constructor(private jobStorage: JobStorageService) {
+  constructor(private jobsApi: JobsApiService) {
     this.loadJobs();
   }
 
-  loadJobs() {
-    this.jobs.set(this.jobStorage.getJobs());
+  async loadJobs() {
+    const data = await this.jobsApi.getJobs();
+    this.jobs.set(data);
   }
 
   filteredJobs = computed(() => {
@@ -39,12 +40,12 @@ export class JobsListComponent {
     });
   });
 
-  onDelete(id: string) {
+  async onDelete(id: string) {
     const ok = confirm('Delete this job?');
     if (!ok) return;
 
-    this.jobStorage.deleteJob(id);
-    this.loadJobs();
+    await this.jobsApi.deleteJob(id);
+    await this.loadJobs();
   }
 
   getBadgeClass(status: JobStatus) {

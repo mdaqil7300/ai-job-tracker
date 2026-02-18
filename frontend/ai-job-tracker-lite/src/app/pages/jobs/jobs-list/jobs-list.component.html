@@ -44,8 +44,8 @@
             </div>
 
             <div class="right">
-                <a class="btn" [routerLink]="['/jobs/edit', job.id]">Edit</a>
-                <button class="btn danger" (click)="onDelete(job.id)">Delete</button>
+                <a class="btn" [routerLink]="['/jobs/edit', job._id]">Edit</a>
+                <button class="btn danger" (click)="onDelete(job._id)">Delete</button>
             </div>
         </div>
     </section>

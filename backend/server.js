@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import Groq from "groq-sdk";
+import { connectDB } from "./db.js";
+import jobsRoutes from "./routes/jobs.routes.js";
 
 dotenv.config();
 
@@ -16,6 +18,8 @@ const groq = new Groq({
 app.get("/health", (req, res) => {
     res.json({ ok: true, service: "ai-job-tracker-backend" });
 });
+
+app.use("/jobs", jobsRoutes);
 
 app.post("/extract-job", async (req, res) => {
     try {
@@ -100,6 +104,9 @@ ${emailText}
 });
 
 const PORT = process.env.PORT || 5050;
+
+await connectDB();
+
 app.listen(PORT, () => {
     console.log(`✅ Backend running on http://localhost:${PORT}`);
 });

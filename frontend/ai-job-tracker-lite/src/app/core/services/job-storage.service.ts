@@ -15,7 +15,7 @@ export class JobStorageService {
     }
 
     getJobById(id: string): Job | undefined {
-        return this.getJobs().find(j => j.id === id);
+        return this.getJobs().find(j => j._id === id);
     }
 
     addJob(job: Job): void {
@@ -26,13 +26,13 @@ export class JobStorageService {
 
     updateJob(updatedJob: Job): void {
         const jobs = this.getJobs().map(job =>
-            job.id === updatedJob.id ? updatedJob : job
+            job._id === updatedJob._id ? updatedJob : job
         );
         this.saveJobs(jobs);
     }
 
     deleteJob(id: string): void {
-        const jobs = this.getJobs().filter(j => j.id !== id);
+        const jobs = this.getJobs().filter(j => j._id !== id);
         this.saveJobs(jobs);
     }
 }

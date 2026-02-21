@@ -3,13 +3,14 @@ import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AiService {
+    private baseUrl = environment.apiBaseUrl;
 
     async generateFollowUpEmail(input: {
         companyName: string;
         role: string;
         lastInterviewDate: string;
     }): Promise<string> {
-        const res = await fetch(`${environment.apiBaseUrl}/generate-followup-email`, {
+        const res = await fetch(`${this.baseUrl}/generate-followup-email`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(input)
@@ -25,7 +26,7 @@ export class AiService {
         role: string;
         techStack: string;
     }): Promise<string[]> {
-        const res = await fetch(`${environment.apiBaseUrl}/generate-interview-questions`, {
+        const res = await fetch(`${this.baseUrl}/generate-interview-questions`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(input)
@@ -44,7 +45,7 @@ export class AiService {
         status: 'Applied' | 'Interview' | 'Offer' | 'Rejected';
     }> {
 
-        const res = await fetch(`${environment.apiBaseUrl}/extract-job`, {
+        const res = await fetch(`${this.baseUrl}/extract-job`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ emailText })
